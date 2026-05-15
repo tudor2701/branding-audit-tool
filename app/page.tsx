@@ -77,48 +77,15 @@ export default function HomePage() {
       </section>
 
       {/* Partners Section */}
-      <section
-        style={{
-          padding: '3.5rem 0',
-          backgroundColor: 'var(--white)',
-          borderTop: '1px solid var(--border-color)',
-        }}
-      >
-        <div
-          className="container"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4rem',
-            flexWrap: 'wrap',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <span
-            style={{
-              fontFamily: "'Inter Display', sans-serif",
-              fontSize: '1.125rem',
-              fontWeight: 500,
-              color: 'var(--black)',
-              whiteSpace: 'nowrap',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Unsere Partner
-          </span>
-          {PARTNERS.map((p) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={p.name}
-              src={p.src}
-              alt={p.name}
-              style={{
-                height: `${p.height * 1.5}px`,
-                width: 'auto',
-                objectFit: 'contain',
-              }}
-            />
-          ))}
+      <section className="partners-section">
+        <div className="container">
+          <p className="partners-label">Unsere Partner</p>
+          <div className="partners-grid">
+            {PARTNERS.map((p) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={p.name} src={p.src} alt={p.name} />
+            ))}
+          </div>
         </div>
       </section>
 

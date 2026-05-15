@@ -62,13 +62,13 @@ export default function Hero() {
           </div>
 
           {/* Stats */}
-          <div style={{ display: 'flex', gap: '3.5rem', flexWrap: 'wrap' }}>
+          <div className="hero-stats">
             {STATS.map((s) => (
               <div key={s.label}>
                 <div
+                  className="hero-stat-value"
                   style={{
                     fontFamily: "'Inter Display', sans-serif",
-                    fontSize: '2.25rem',
                     fontWeight: 600,
                     letterSpacing: '-0.02em',
                     lineHeight: 1.1,
@@ -79,9 +79,9 @@ export default function Hero() {
                   <span style={{ color: 'var(--primary)' }}>+</span>
                 </div>
                 <div
+                  className="hero-stat-label"
                   style={{
                     fontFamily: "'Inter', sans-serif",
-                    fontSize: '0.9375rem',
                     color: '#525866',
                     marginTop: '0.25rem',
                   }}
