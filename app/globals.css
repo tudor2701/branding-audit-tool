@@ -238,3 +238,72 @@ textarea.form-input {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.hero-h1 {
+  font-size: 4.25rem;
+}
+
+.hero-photo {
+  position: relative;
+  height: 640px;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.form-wizard {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .hero-h1 {
+    font-size: 3rem;
+  }
+  .hero-photo {
+    height: 480px;
+    max-width: 28rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .form-wizard {
+    padding: 2rem 1.25rem;
+  }
+  .hero-h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .hero-h1 {
+    font-size: 2.125rem;
+  }
+  .hero-photo {
+    height: 400px;
+  }
+  .form-wizard {
+    padding: 1.5rem 1rem;
+  }
+}

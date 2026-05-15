@@ -8,30 +8,58 @@ import { FormData, FormAnswer, TOTAL_STEPS } from '@/lib/types';
 
 const ZIELGRUPPE_OPTIONS = [
   'Fachkräfte',
-  'Führungskräfte',
   'Auszubildende',
-  'Alle Zielgruppen',
-  'Andere',
+  'Führungskräfte',
+  'Helfer & Quereinsteiger',
+  'Verschiedene Gruppen',
 ];
 
-const KANAL_OPTIONS = [
+const WERBUNG_OPTIONS = [
+  'Ja, regelmäßig',
+  'Manchmal',
+  'Nein, noch nie',
+];
+
+const STELLEN_KANAL_OPTIONS = [
+  'Eigene Karriereseite',
+  'Indeed',
+  'Stepstone',
+  'Agentur für Arbeit',
   'LinkedIn',
+  'Facebook',
+  'Instagram',
+  'Xing',
+  'Kununu',
+  'Wir veröffentlichen aktuell keine',
+];
+
+const SOCIAL_OPTIONS = [
   'Instagram',
   'Facebook',
-  'Karrierewebsite',
+  'LinkedIn',
+  'TikTok',
+  'YouTube',
   'Xing',
   'Kununu',
   'Keine',
 ];
 
+const BEWERBUNGEN_OPTIONS = [
+  'Keine',
+  '1–5 pro Monat',
+  '6–15 pro Monat',
+  '16–50 pro Monat',
+  'Mehr als 50 pro Monat',
+];
+
 const STEP_TITLES: Record<number, string> = {
   1: 'Ihre Kontaktdaten',
-  2: 'Zielgruppe',
-  3: 'Ihre Marke',
-  4: 'Differenzierung',
-  5: 'Aktive Kanäle',
-  6: 'Branding-Konsistenz',
-  7: 'Ihr größtes Problem',
+  2: 'Wen suchen Sie?',
+  3: 'Stellen-Werbung',
+  4: 'Stellenanzeigen',
+  5: 'Social Media',
+  6: 'Bewerbungen',
+  7: 'Ihre Herausforderung',
   8: 'Ihr Ziel',
 };
 
@@ -46,10 +74,10 @@ export default function FormWizard() {
   const [phone, setPhone] = useState('');
   const [company, setCompany] = useState('');
   const [zielgruppe, setZielgruppe] = useState('');
-  const [marke, setMarke] = useState('');
-  const [differenzierung, setDifferenzierung] = useState('');
-  const [kanaele, setKanaele] = useState<string[]>([]);
-  const [konsistenz, setKonsistenz] = useState(3);
+  const [werbung, setWerbung] = useState('');
+  const [stellenKanaele, setStellenKanaele] = useState<string[]>([]);
+  const [socialKanaele, setSocialKanaele] = useState<string[]>([]);
+  const [bewerbungen, setBewerbungen] = useState('');
   const [problem, setProblem] = useState('');
   const [ziel, setZiel] = useState('');
 
@@ -60,13 +88,13 @@ export default function FormWizard() {
       case 2:
         return zielgruppe !== '';
       case 3:
-        return marke.trim() !== '';
+        return werbung !== '';
       case 4:
-        return differenzierung.trim() !== '';
+        return stellenKanaele.length > 0;
       case 5:
-        return kanaele.length > 0;
+        return socialKanaele.length > 0;
       case 6:
-        return true;
+        return bewerbungen !== '';
       case 7:
         return problem.trim() !== '';
       case 8:
@@ -76,9 +104,15 @@ export default function FormWizard() {
     }
   }
 
-  function toggleKanal(kanal: string) {
-    setKanaele((prev) =>
-      prev.includes(kanal) ? prev.filter((k) => k !== kanal) : [...prev, kanal]
+  function toggleStellenKanal(k: string) {
+    setStellenKanaele((prev) =>
+      prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
+    );
+  }
+
+  function toggleSocialKanal(k: string) {
+    setSocialKanaele((prev) =>
+      prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
     );
   }
 
@@ -100,12 +134,12 @@ export default function FormWizard() {
     setError('');
 
     const answers: FormAnswer[] = [
-      { question: 'Zielgruppe', answer: zielgruppe },
-      { question: 'Marke in 3 Worten', answer: marke },
-      { question: 'Differenzierung von Wettbewerbern', answer: differenzierung },
-      { question: 'Aktive Kanäle', answer: kanaele.join(', ') },
-      { question: 'Branding-Konsistenz (1-5)', answer: String(konsistenz) },
-      { question: 'Größtes Branding-Problem', answer: problem },
+      { question: 'Welche Mitarbeiter suchen Sie aktuell?', answer: zielgruppe },
+      { question: 'Schalten Sie Werbung für Ihre offenen Stellen?', answer: werbung },
+      { question: 'Wo veröffentlichen Sie Ihre Stellenanzeigen?', answer: stellenKanaele.join(', ') },
+      { question: 'Auf welchen Social-Media-Kanälen ist Ihr Unternehmen aktiv?', answer: socialKanaele.join(', ') },
+      { question: 'Wie viele Bewerbungen erhalten Sie aktuell pro Monat?', answer: bewerbungen },
+      { question: 'Größte Herausforderung bei der Personalsuche', answer: problem },
       { question: 'Ziel in 6 Monaten', answer: ziel },
     ];
 
@@ -145,13 +179,7 @@ export default function FormWizard() {
   return (
     <>
       {isSubmitting && <LoadingState />}
-      <div
-        style={{
-          maxWidth: '640px',
-          margin: '0 auto',
-          padding: '3rem 2.5rem',
-        }}
-      >
+      <div className="form-wizard">
         <StepIndicator currentStep={currentStep} />
 
         <h2
@@ -161,6 +189,7 @@ export default function FormWizard() {
             marginBottom: '2rem',
             fontFamily: "'Inter Display', sans-serif",
             letterSpacing: '-0.01em',
+            lineHeight: 1.2,
           }}
         >
           {STEP_TITLES[currentStep]}
@@ -215,7 +244,7 @@ export default function FormWizard() {
         {/* Step 2: Zielgruppe */}
         {currentStep === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <p style={questionStyle}>Wen wollen Sie mit Ihrem Employer Branding erreichen?</p>
+            <p style={questionStyle}>Welche Mitarbeiter suchen Sie aktuell?</p>
             {ZIELGRUPPE_OPTIONS.map((opt) => (
               <label key={opt} style={radioLabelStyle(zielgruppe === opt)}>
                 <input
@@ -233,121 +262,101 @@ export default function FormWizard() {
           </div>
         )}
 
-        {/* Step 3: Marke */}
+        {/* Step 3: Werbung */}
         {currentStep === 3 && (
-          <div>
-            <p style={questionStyle}>Beschreiben Sie Ihre Marke in 3 Worten</p>
-            <input
-              type="text"
-              placeholder="z.B. innovativ, zuverlässig, menschlich"
-              value={marke}
-              onChange={(e) => setMarke(e.target.value)}
-              style={inputStyle}
-            />
-          </div>
-        )}
-
-        {/* Step 4: Differenzierung */}
-        {currentStep === 4 && (
-          <div>
-            <p style={questionStyle}>Was unterscheidet Sie von Ihren Wettbewerbern?</p>
-            <textarea
-              placeholder="Beschreiben Sie Ihre einzigartigen Stärken und Alleinstellungsmerkmale als Arbeitgeber…"
-              value={differenzierung}
-              onChange={(e) => setDifferenzierung(e.target.value)}
-              rows={5}
-              style={{ ...inputStyle, minHeight: '140px', resize: 'vertical' }}
-            />
-          </div>
-        )}
-
-        {/* Step 5: Kanäle */}
-        {currentStep === 5 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <p style={questionStyle}>Auf welchen Kanälen sind Sie aktiv? (Mehrfachauswahl)</p>
-            {KANAL_OPTIONS.map((opt) => (
-              <label key={opt} style={checkboxLabelStyle(kanaele.includes(opt))}>
+            <p style={questionStyle}>
+              Schalten Sie Werbung für Ihre offenen Stellen (z.B. bezahlte Anzeigen auf Facebook,
+              Instagram, Google oder Stellenportalen)?
+            </p>
+            {WERBUNG_OPTIONS.map((opt) => (
+              <label key={opt} style={radioLabelStyle(werbung === opt)}>
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name="werbung"
                   value={opt}
-                  checked={kanaele.includes(opt)}
-                  onChange={() => toggleKanal(opt)}
+                  checked={werbung === opt}
+                  onChange={() => setWerbung(opt)}
                   style={{ display: 'none' }}
                 />
-                <span style={checkboxIndicatorStyle(kanaele.includes(opt))} />
+                <span style={radioIndicatorStyle(werbung === opt)} />
                 {opt}
               </label>
             ))}
           </div>
         )}
 
-        {/* Step 6: Konsistenz */}
+        {/* Step 4: Stellen-Kanäle */}
+        {currentStep === 4 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p style={questionStyle}>
+              Wo veröffentlichen Sie Ihre Stellenanzeigen aktuell? (Mehrfachauswahl möglich)
+            </p>
+            {STELLEN_KANAL_OPTIONS.map((opt) => (
+              <label key={opt} style={checkboxLabelStyle(stellenKanaele.includes(opt))}>
+                <input
+                  type="checkbox"
+                  value={opt}
+                  checked={stellenKanaele.includes(opt)}
+                  onChange={() => toggleStellenKanal(opt)}
+                  style={{ display: 'none' }}
+                />
+                <span style={checkboxIndicatorStyle(stellenKanaele.includes(opt))} />
+                {opt}
+              </label>
+            ))}
+          </div>
+        )}
+
+        {/* Step 5: Social Media */}
+        {currentStep === 5 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p style={questionStyle}>
+              Auf welchen Social-Media-Kanälen ist Ihr Unternehmen aktiv? (Mehrfachauswahl möglich)
+            </p>
+            {SOCIAL_OPTIONS.map((opt) => (
+              <label key={opt} style={checkboxLabelStyle(socialKanaele.includes(opt))}>
+                <input
+                  type="checkbox"
+                  value={opt}
+                  checked={socialKanaele.includes(opt)}
+                  onChange={() => toggleSocialKanal(opt)}
+                  style={{ display: 'none' }}
+                />
+                <span style={checkboxIndicatorStyle(socialKanaele.includes(opt))} />
+                {opt}
+              </label>
+            ))}
+          </div>
+        )}
+
+        {/* Step 6: Bewerbungen */}
         {currentStep === 6 && (
-          <div>
-            <p style={questionStyle}>Wie einheitlich ist Ihr Branding über alle Kanäle?</p>
-            <div style={{ marginTop: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--gray-placeholder)' }}>Uneinheitlich</span>
-                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'var(--gray-placeholder)' }}>Sehr konsistent</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={5}
-                value={konsistenz}
-                onChange={(e) => setKonsistenz(Number(e.target.value))}
-                style={{
-                  width: '100%',
-                  appearance: 'none',
-                  height: '4px',
-                  borderRadius: '100px',
-                  background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${((konsistenz - 1) / 4) * 100}%, var(--gray-warm) ${((konsistenz - 1) / 4) * 100}%, var(--gray-warm) 100%)`,
-                  outline: 'none',
-                  cursor: 'pointer',
-                }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem' }}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span
-                    key={n}
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '0.875rem',
-                      fontWeight: konsistenz === n ? 600 : 400,
-                      color: konsistenz === n ? 'var(--black)' : 'var(--gray-placeholder)',
-                    }}
-                  >
-                    {n}
-                  </span>
-                ))}
-              </div>
-              <div
-                style={{
-                  textAlign: 'center',
-                  marginTop: '1.5rem',
-                  padding: '0.75rem',
-                  backgroundColor: 'var(--gray-light)',
-                  borderRadius: '12px',
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: '0.9375rem',
-                  fontWeight: 500,
-                }}
-              >
-                Ihr Wert: <strong style={{ color: 'var(--black)' }}>{konsistenz} / 5</strong>
-                {konsistenz <= 2 && ' — Noch viel Potenzial'}
-                {konsistenz === 3 && ' — Solide Basis'}
-                {konsistenz >= 4 && ' — Sehr gut aufgestellt'}
-              </div>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p style={questionStyle}>Wie viele Bewerbungen erhalten Sie aktuell pro Monat?</p>
+            {BEWERBUNGEN_OPTIONS.map((opt) => (
+              <label key={opt} style={radioLabelStyle(bewerbungen === opt)}>
+                <input
+                  type="radio"
+                  name="bewerbungen"
+                  value={opt}
+                  checked={bewerbungen === opt}
+                  onChange={() => setBewerbungen(opt)}
+                  style={{ display: 'none' }}
+                />
+                <span style={radioIndicatorStyle(bewerbungen === opt)} />
+                {opt}
+              </label>
+            ))}
           </div>
         )}
 
         {/* Step 7: Problem */}
         {currentStep === 7 && (
           <div>
-            <p style={questionStyle}>Was ist Ihr aktuell größtes Branding-Problem?</p>
+            <p style={questionStyle}>Was ist Ihre größte Herausforderung bei der Personalsuche?</p>
             <textarea
-              placeholder="Beschreiben Sie die Herausforderungen, mit denen Sie aktuell im Bereich Employer Branding konfrontiert sind…"
+              placeholder="z.B. zu wenige Bewerbungen, schlechte Qualität der Bewerber, Stellen bleiben lange unbesetzt…"
               value={problem}
               onChange={(e) => setProblem(e.target.value)}
               rows={5}
@@ -359,9 +368,9 @@ export default function FormWizard() {
         {/* Step 8: Ziel */}
         {currentStep === 8 && (
           <div>
-            <p style={questionStyle}>Was möchten Sie in den nächsten 6 Monaten erreicht haben?</p>
+            <p style={questionStyle}>Was möchten Sie in den nächsten 6 Monaten erreichen?</p>
             <textarea
-              placeholder="Beschreiben Sie Ihre konkreten Ziele und Erwartungen für die nächsten 6 Monate…"
+              placeholder="z.B. 5 neue Mitarbeiter einstellen, bestimmte Position besetzen, deutlich mehr Bewerbungen erhalten…"
               value={ziel}
               onChange={(e) => setZiel(e.target.value)}
               rows={5}
@@ -390,6 +399,7 @@ export default function FormWizard() {
             alignItems: 'center',
             marginTop: '2.5rem',
             gap: '1rem',
+            flexWrap: 'wrap',
           }}
         >
           {currentStep > 1 && (

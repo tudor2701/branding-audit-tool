@@ -48,14 +48,7 @@ export default function HomePage() {
 
       {/* Benefits Section */}
       <section id="benefits" style={{ padding: '5rem 0', backgroundColor: 'var(--gray-light)', scrollMarginTop: '2rem' }}>
-        <div
-          className="container"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '2rem',
-          }}
-        >
+        <div className="container benefits-grid">
           {BENEFITS.map((b) => (
             <div key={b.title} className="card" style={{ padding: '3rem' }}>
               <h3

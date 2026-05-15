@@ -37,7 +37,7 @@ export default function DankePage() {
           }}
         >
           Ihre Antworten wurden erfolgreich übermittelt. Sie erhalten Ihre
-          persönliche Employer Branding Analyse in Kürze per E-Mail.
+          persönliche Personalmarketing-Analyse in Kürze per E-Mail.
         </p>
 
         <div

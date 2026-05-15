@@ -15,27 +15,19 @@ export default function Hero() {
         overflow: 'hidden',
       }}
     >
-      <div
-        className="container"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1.05fr 1fr',
-          gap: '3rem',
-          alignItems: 'center',
-        }}
-      >
+      <div className="container hero-grid">
         {/* Left */}
         <div>
           <h1
+            className="hero-h1"
             style={{
-              fontSize: '4.25rem',
               fontWeight: 600,
               marginBottom: '1.5rem',
               lineHeight: 1.08,
               letterSpacing: '-0.02em',
             }}
           >
-            Wie stark ist Ihr Employer Branding?
+            Wie stark ist Ihr Personalmarketing?
           </h1>
           <p
             style={{
@@ -48,8 +40,8 @@ export default function Hero() {
               maxWidth: '32rem',
             }}
           >
-            Beantworten Sie 8 Fragen und erhalten Sie eine kostenlose,
-            KI-gestützte Analyse Ihres Employer Brandings — direkt in Ihr Postfach.
+            Beantworten Sie 8 kurze Fragen und erhalten Sie eine kostenlose,
+            KI-gestützte Analyse Ihrer Fachkräftegewinnung — direkt in Ihr Postfach.
           </p>
 
           <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '3.5rem', flexWrap: 'wrap' }}>
@@ -102,7 +94,7 @@ export default function Hero() {
         </div>
 
         {/* Right: photo + yellow block + floating card */}
-        <div style={{ position: 'relative', height: '640px' }}>
+        <div className="hero-photo">
           <div
             style={{
               position: 'absolute',

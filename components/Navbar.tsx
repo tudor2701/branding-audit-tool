@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const hideCta = pathname?.startsWith('/analyse');
+
   return (
     <nav
       style={{
@@ -18,6 +24,7 @@ export default function Navbar() {
           justifyContent: 'space-between',
           paddingTop: '1rem',
           paddingBottom: '1rem',
+          minHeight: '80px',
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
@@ -30,9 +37,11 @@ export default function Navbar() {
             style={{ width: '148px', height: 'auto' }}
           />
         </Link>
-        <Link href="/analyse" className="btn-primary" style={{ fontSize: '0.9375rem' }}>
-          Analyse starten
-        </Link>
+        {!hideCta && (
+          <Link href="/analyse" className="btn-primary" style={{ fontSize: '0.9375rem' }}>
+            Analyse starten
+          </Link>
+        )}
       </div>
     </nav>
   );
