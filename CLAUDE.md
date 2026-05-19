@@ -112,25 +112,71 @@ lib/
 - [ ] **Module 2: Google Sheets "Add a Row"** — Spalten: Timestamp, Name, Email, Phone, Firma, jede Antwort als eigene Spalte. Sheet vorher anlegen.
 - [ ] **Module 3: HTTP "Make a request"** — POST `https://api.anthropic.com/v1/messages`
   - Header: `x-api-key: <ANTHROPIC_API_KEY>`, `anthropic-version: 2023-06-01`, `content-type: application/json`
-  - Body JSON:
-    ```json
-    {
-      "model": "claude-sonnet-4-6",
-      "max_tokens": 2000,
-      "system": "Du bist Employer Branding Experte bei Convaix. Stil: direkt, professionell, lösungsorientiert. Antworte auf Deutsch mit: Zusammenfassung (2-3 Sätze), 3 Stärken, 3-5 Potenziale mit Priorität (hoch/mittel/niedrig), 3 konkrete Empfehlungen mit Zeitrahmen und erwarteter Wirkung, abschließendes Fazit.",
-      "messages": [{"role": "user", "content": "Firma: {{company}}\n\nAntworten:\n{{answers}}"}]
-    }
+  - Body Type: **Data structure** (Make escaped Reserved Chars automatisch — verhindert JSON-Bruch bei Newlines in User-Input)
+  - Model: `claude-sonnet-4-6`, `max_tokens: 2500`
+  - **System Prompt** (exakt so eintragen, echte Enter statt `\n`):
+
     ```
-  - Parse Response: Text aus `content[0].text`
-- [ ] **Module 4: Gmail "Send Email"** → User
+    Du bist Personalmarketing- und Recruiting-Experte bei Convaix. Schreibe eine professionelle, lösungsorientierte E-Mail-Analyse auf Deutsch in sauberem HTML.
+
+    REGELN:
+    - Gib NUR HTML aus, beginnend direkt mit der ersten Section. KEINE Anrede, KEIN Titel — die Mail-Wrapper-Schicht macht das schon.
+    - KEINE Markdown-Syntax, KEINE ```html-Codeblöcke, KEINE <html>/<body>-Tags.
+    - Erlaubte Tags: <p>, <ul>, <ol>, <li>, <strong>. KEINE <h1>-<h6>, KEINE <hr>, KEINE <br>.
+    - Section-Headings als <p><strong>...</strong></p> (gleiche Schriftgröße wie Body, nur fett).
+    - Fazit-Section: GENAU EIN <p>-Absatz nach dem Heading — eine einzige Synthese-Aussage. KEINE weiteren Absätze, keinen CONVAIX-Pitch, keine Gesprächs-Einladung — das macht der Wrapper.
+    - Aufzählungen: <ul> für ungeordnete, <ol> für nummerierte Listen. Jeder <li> = max 1 Satz, beginnt mit <strong>Titel</strong>: gefolgt vom Erklärungssatz.
+    - **MAX 250 Wörter gesamt.** Scannable in unter 60 Sekunden. Keine Wiederholungen, keine Floskeln, keine Erklärungen des Offensichtlichen.
+    - KEINE Signatur, KEIN Calendly-Button — Gmail und Make hängen beides automatisch an.
+
+    STRUKTUR (exakt einhalten, {{company}} aus User-Message übernehmen):
+    <p><strong>Kernbefund</strong></p>
+    <p>...1-2 Sätze: was ist der zentrale Engpass im Recruiting...</p>
+    <p><strong>Stärken</strong></p>
+    <ul><li><strong>Titel</strong>: max 1 Satz</li>...2-3 Punkte...</ul>
+    <p><strong>Größte Hebel</strong></p>
+    <ul><li><strong>Titel</strong>: max 1 Satz</li>...2-3 Punkte...</ul>
+    <p><strong>Empfehlungen</strong></p>
+    <ol><li><strong>Titel</strong>: max 1 Satz, konkret</li>...3 Punkte...</ol>
+    <p><strong>Fazit</strong></p>
+    <p>...EIN Satz Synthese: was ist der entscheidende Hebel, warum ist das Ziel realistisch...</p>
+    ```
+
+    Wichtig: KEIN CONVAIX-Pitch und KEINE Gesprächs-Einladung im Output — Make-Wrapper hängt das mit fixem Text separat an (siehe Module 4).
+
+  - **User Message:** `Firma: {{company}}\nName: {{name}}\n\nAntworten:\n{{answers}}`
+  - Parse Response: Output = `{{3.content[0].text}}` (ist bereits sauberes HTML)
+
+- [ ] **Gmail Signatur** — Settings → Signature → HTML-Signatur (Logo, Philipp, Kontakt) hinterlegen. In Gmail-Modulen `Send signature: Yes` setzen. Kein Code-Anhängen nötig.
+
+- [ ] **Module 4: Gmail "Send Email"** → Kunde
   - To: `{{email}}`
-  - Subject: `Ihre Employer Branding Analyse — Convaix`
-  - Body HTML: formatierte Analyse aus Claude Response (Markdown → HTML via Make Text Parser oder Hand-Formatierung)
+  - Subject: `Ihre Recruiting-Analyse für {{company}} — Convaix`
+  - **Content type: HTML**
+  - Body (Anrede-Wrapper + Claude-Output + statische Schluss-Sätze + CTA + Outro, **KEINE `<hr>`-Tags**):
+    ```html
+    <p>Hallo {{name}},</p>
+    <p>vielen Dank für Ihre Anfrage. Basierend auf Ihren Angaben haben wir eine erste Recruiting-Analyse für {{company}} erstellt:</p>
+    {{3.content[0].text}}
+    <p>Genau hier setzt <strong>CONVAIX</strong> an: mit einer datengetriebenen, kanalübergreifenden Recruiting-Strategie, die Ihre Arbeitgebermarke gezielt in Bewerbungen verwandelt.</p>
+    <p>Lassen Sie uns in einem kostenlosen 20-minütigen Gespräch konkret durchgehen, welche Hebel in Ihrem Fall den schnellsten Impact liefern.</p>
+    <p style="text-align:center;margin:40px 0 32px;">
+      <a href="CALENDLY_URL_HIER" style="background:#fcc900;color:#0e0e0e;padding:16px 36px;border-radius:100px;text-decoration:none;font-weight:600;font-family:Arial,sans-serif;font-size:16px;display:inline-block;">Jetzt Termin vereinbaren</a>
+    </p>
+    <p style="text-align:center;color:#868c98;font-family:Arial,sans-serif;font-size:13px;margin:0;">20 Minuten · kostenlos · unverbindlich</p>
+    <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung.</p>
+    ```
+    `CALENDLY_URL_HIER` durch echte Calendly-URL (Philipp) ersetzen. Wrapper sagt **Recruiting-Analyse**, nicht „Employer Branding". Keine `<hr>`-Striche im Body — Gmail-Signatur (via `Send signature: Yes`) trennt sich selbst durch ihren eigenen `--`-Block. CONVAIX-Pitch und Gesprächs-Einladung kommen aus dem Wrapper (nicht aus Claude), damit Fazit-Sektion gleiches Rhythmus-Muster wie alle anderen Sektionen hat.
+  - `Send signature: Yes`
+
 - [ ] **Module 5: Gmail "Send Email"** → Philipp
   - To: Philipps Adresse
-  - Subject: `Neuer Lead: {{company}}`
-  - Body: alle Kontaktdaten + Antworten + Claude-Analyse
-- [ ] Szenario aktivieren, End-to-End-Test
+  - Subject: `Neuer Lead: {{company}} ({{name}})`
+  - Content type: HTML
+  - Body: Lead-Daten-Block (Name, Mail, Tel, Firma, alle Antworten) + Trennlinie + `{{3.content[0].text}}`
+  - `Send signature: Yes` (optional)
+
+- [ ] End-to-End-Test: Testsubmit → HTML rendert sauber in Gmail? Anrede korrekt? Signatur dran? Keine rohen Markdown-Zeichen?
 
 ### 2. Deployment
 
