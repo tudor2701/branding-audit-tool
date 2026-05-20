@@ -40,8 +40,8 @@ export default function Hero() {
               maxWidth: '32rem',
             }}
           >
-            Beantworten Sie 8 kurze Fragen und erhalten Sie eine kostenlose,
-            KI-gestützte Analyse Ihrer Fachkräftegewinnung — direkt in Ihr Postfach.
+            Beantworten Sie 8 kurze Fragen und erhalten Sie eine kostenlose Analyse
+            Ihres Personalmarketings direkt in Ihr Postfach.
           </p>
 
           <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '3.5rem', flexWrap: 'wrap' }}>
@@ -110,7 +110,7 @@ export default function Hero() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://cdn.prod.website-files.com/66a89c1b08041bb1df8b19ec/67d9b147aaf44cf0de49397a_5c48c03d6c6d41138b4e480c70cc92a5_20250318_Phillip_Weber_Hero_Header_v4.webp"
-            alt="Philipp Weber — Convaix"
+            alt="Philipp Weber, Convaix"
             style={{
               position: 'absolute',
               top: 0,

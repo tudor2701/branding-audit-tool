@@ -5,11 +5,11 @@ import Link from 'next/link';
 const BENEFITS = [
   {
     title: '5 Minuten',
-    description: 'Schnell und einfach ausfüllen — kein Fachwissen nötig.',
+    description: 'Schnell und einfach ausfüllen. Kein Fachwissen nötig.',
   },
   {
-    title: 'KI-Analyse',
-    description: 'Personalisierte Auswertung Ihrer Antworten durch künstliche Intelligenz.',
+    title: 'Persönliche Analyse',
+    description: 'Maßgeschneiderte Empfehlungen für Ihr Personalmarketing, KI-gestützt aufbereitet und auf Ihre Situation zugeschnitten.',
   },
   {
     title: 'Direkt per E-Mail',
