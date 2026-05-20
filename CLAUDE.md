@@ -109,7 +109,22 @@ lib/
 - [ ] Neues Szenario in Make
 - [ ] **Module 1: Webhook** — Custom Webhook, URL kopieren → in `.env.local` als `MAKE_WEBHOOK_URL` eintragen, dev server neu starten
 - [ ] Testsubmit aus Form → Make "Determine data structure" triggert → JSON-Schema wird gelernt
-- [ ] **Module 2: Google Sheets "Add a Row"** — Spalten: Timestamp, Name, Email, Phone, Firma, jede Antwort als eigene Spalte. Sheet vorher anlegen.
+- [ ] **Module 2: Google Sheets "Add a Row"** — Sheet vorher anlegen. Make-Arrays sind **1-basiert** (nicht 0). Spalten-Mapping:
+
+    | Spalte | Header | Mapping |
+    |--------|--------|---------|
+    | A | Timestamp | `submittedAt` |
+    | B | Name | `name` |
+    | C | Email | `email` |
+    | D | Telefon | `phone` |
+    | E | Firma | `company` |
+    | F | Zielgruppe | `answers[1].answer` |
+    | G | Werbung | `answers[2].answer` |
+    | H | Stellen-Kanäle | `answers[3].answer` |
+    | I | Region | `answers[4].answer` |
+    | J | Bewerbungen | `answers[5].answer` |
+    | K | Problem | `answers[6].answer` |
+    | L | Ziel | `answers[7].answer` |
 - [ ] **Module 3: HTTP "Make a request"** — POST `https://api.anthropic.com/v1/messages`
   - Header: `x-api-key: <ANTHROPIC_API_KEY>`, `anthropic-version: 2023-06-01`, `content-type: application/json`
   - Body Type: **Data structure** (Make escaped Reserved Chars automatisch — verhindert JSON-Bruch bei Newlines in User-Input)
@@ -128,6 +143,11 @@ lib/
     - Aufzählungen: <ul> für ungeordnete, <ol> für nummerierte Listen. Jeder <li> = max 1 Satz, beginnt mit <strong>Titel</strong>: gefolgt vom Erklärungssatz.
     - **MAX 250 Wörter gesamt.** Scannable in unter 60 Sekunden. Keine Wiederholungen, keine Floskeln, keine Erklärungen des Offensichtlichen.
     - KEINE Signatur, KEIN Calendly-Button — Gmail und Make hängen beides automatisch an.
+
+    REGIONALER KONTEXT:
+    - Die User-Message enthält das Feld „In welcher Region suchen Sie Mitarbeiter?". Nutze diese Region in den Sections „Größte Hebel" und „Empfehlungen": Mindestens EIN Punkt MUSS regionalen Wettbewerbsdruck oder einen lokalen Differenzierungs-Hebel adressieren (z.B. Pendel-Radius, lokale Sichtbarkeit, regionale Stellenportale/Kanäle, Konkurrenz vor Ort um die genannte Zielgruppe).
+    - KEINE erfundenen Zahlen, KEINE Statistik-Behauptungen — nur plausibler Marktkontext, der für jede deutsche Region einer ähnlichen Größe gelten würde.
+    - Falls die Region unspezifisch ist (z.B. „bundesweit", „egal"), keinen regionalen Punkt erzwingen — dann normale Empfehlungen.
 
     STRUKTUR (exakt einhalten, {{company}} aus User-Message übernehmen):
     <p><strong>Kernbefund</strong></p>
@@ -200,3 +220,33 @@ lib/
 - **Philipps Photo**: WebP von convaix.de CDN, hat weißen Hintergrund (nicht transparent). Aktuell einfach mit `objectFit: contain` + `objectPosition: bottom center` über gelbem CSS-Viereck. Wirkt wie auf convaix.de.
 - **Dev-Port**: 3002 (3000 belegt, 3001 belegt)
 - **Fonts**: Komplett self-hosted, Webflow CDN nur für initialen Download verwendet. Keine Laufzeit-Abhängigkeit.
+
+---
+
+## Änderungsprotokoll
+
+### 2026-05-20 — Call mit Philipp: Region statt Social Media
+
+**Hintergrund:** Convaix kümmert sich nicht um Social-Media-Profile / LinkedIn. Die alte Step-5-Frage „Auf welchen Social-Media-Kanälen ist Ihr Unternehmen aktiv?" lieferte keinen Mehrwert für die Analyse. Stattdessen jetzt Region-Abfrage für regionale Wettbewerbs-Recherche durch Claude.
+
+**Was sich änderte:**
+
+- **`components/FormWizard.tsx`**
+  - State: `socialKanaele: string[]` → `region: string`
+  - `SOCIAL_OPTIONS` Array entfernt, `toggleSocialKanal` Handler entfernt
+  - `STEP_TITLES[5]`: `'Social Media'` → `'Region'`
+  - Step-5 Render: Multi-Checkbox-Liste → einzelnes Textfeld (Placeholder „z.B. Stuttgart, PLZ 70…, Großraum München")
+  - `isStepValid` case 5: `socialKanaele.length > 0` → `region.trim() !== ''`
+  - `handleSubmit` answers[3]: `{ question: 'Auf welchen Social-Media-Kanälen…', answer: socialKanaele.join(', ') }` → `{ question: 'In welcher Region suchen Sie Mitarbeiter?', answer: region }`
+- **`CLAUDE.md`** (diese Datei)
+  - Form Steps Section auf aktuelle Recruiting-Fragen aktualisiert (war noch alte Branding-Liste)
+  - Module-2-Sheet-Mapping als Tabelle dokumentiert, mit Hinweis auf Make 1-basiertes Indexing
+  - Module-3-System-Prompt um neuen Block `REGIONALER KONTEXT` ergänzt (zwingt Claude, mindestens einen Punkt mit regionalem Bezug in „Größte Hebel" oder „Empfehlungen" zu liefern)
+- **`lib/types.ts` / `components/StepIndicator.tsx`** — keine Änderung (generisch)
+- **`app/api/submit/route.ts`** — keine Änderung (Payload bleibt `{ name, email, phone, company, answers[] }`)
+
+**Make-Aufgaben (manuell, kein Code):**
+
+- Webhook „Redetermine data structure" durch Test-Submit neu triggern (Reihenfolge in `answers[]` hat sich nicht geändert, aber Frage-Text in `answers[4]` ist anders → Empfehlung trotzdem)
+- Sheet-Header umbenennen: G `Marke` → `Werbung`, H `Differenzierung` → `Stellen-Kanäle`, I `Kanäle` → `Region`, J `Konsistenz` → `Bewerbungen`. Mapping (`answers[1]…[7]`) bleibt unverändert.
+- HTTP-Claude-Modul: System-Prompt durch neue Version (mit `REGIONALER KONTEXT`-Block) ersetzen.
