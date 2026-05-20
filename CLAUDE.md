@@ -250,3 +250,27 @@ lib/
 - Webhook „Redetermine data structure" durch Test-Submit neu triggern (Reihenfolge in `answers[]` hat sich nicht geändert, aber Frage-Text in `answers[4]` ist anders → Empfehlung trotzdem)
 - Sheet-Header umbenennen: G `Marke` → `Werbung`, H `Differenzierung` → `Stellen-Kanäle`, I `Kanäle` → `Region`, J `Konsistenz` → `Bewerbungen`. Mapping (`answers[1]…[7]`) bleibt unverändert.
 - HTTP-Claude-Modul: System-Prompt durch neue Version (mit `REGIONALER KONTEXT`-Block) ersetzen.
+
+### 2026-05-20 — Logo-Position stabilisieren
+
+**Hintergrund:** Logo sprang zwischen Landing- und Analyse-Seite um ~7px horizontal. Ursache: Landing scrollt (Scrollbar nimmt ~15px Viewport-Breite), Analyse-Seite kurz/ohne Scrollbar → `.container` mit `margin: 0 auto` zentrierte sich auf unterschiedlich breitem Viewport.
+
+**Was sich änderte:**
+
+- **`app/globals.css`** — `html`-Block: `scrollbar-gutter: stable` ergänzt. Reserviert Scrollbar-Platz permanent, egal ob sichtbar oder nicht. Container-Mitte bleibt konstant.
+
+### 2026-05-20 — Hero-Copy entschärfen + Em-Dashes raus
+
+**Hintergrund:** Hero positionierte Tool zu stark als „KI-Produkt" („KI-gestützte Analyse Ihrer Fachkräftegewinnung"). Convaix verkauft Personalmarketing-Beratung, KI ist nur Werkzeug. Außerdem: alle Em-Dashes (—) aus UI-Text raus (wirken unruhig).
+
+**Was sich änderte:**
+
+- **`components/Hero.tsx`**
+  - Subhead: „KI-gestützte Analyse Ihrer Fachkräftegewinnung — direkt in Ihr Postfach." → „Analyse Ihres Personalmarketings direkt in Ihr Postfach." (KI weg, Em-Dash weg, konsistent zur H1)
+  - Bild-Alt-Text: „Philipp Weber — Convaix" → „Philipp Weber, Convaix"
+- **`app/layout.tsx`** — Page-Title: Em-Dash → Vertical Bar; Meta-Description konsistent zum neuen Hero ohne „KI-gestützt"/„Fachkräftegewinnung"
+- **`app/page.tsx`** — Benefits-Cards
+  - `BENEFITS[0]` Description: Em-Dash entfernt, in zwei Sätze zerlegt
+  - `BENEFITS[1]`: Titel „KI-Analyse" → „Persönliche Analyse"; Description erwähnt KI nur noch subtil als Werkzeug („KI-gestützt aufbereitet")
+
+**Verifikation:** `grep -rn "—" --include="*.tsx" --include="*.ts" app components lib` → keine Treffer mehr in UI-Strings.
