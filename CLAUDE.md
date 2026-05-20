@@ -274,3 +274,19 @@ lib/
   - `BENEFITS[1]`: Titel „KI-Analyse" → „Persönliche Analyse"; Description erwähnt KI nur noch subtil als Werkzeug („KI-gestützt aufbereitet")
 
 **Verifikation:** `grep -rn "—" --include="*.tsx" --include="*.ts" app components lib` → keine Treffer mehr in UI-Strings.
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues im Repo `tudor2701/convaix-branding-audit` via `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Canonical Default-Labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` + `docs/adr/` am Repo-Root. See `docs/agents/domain.md`.
