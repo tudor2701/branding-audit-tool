@@ -33,17 +33,6 @@ const STELLEN_KANAL_OPTIONS = [
   'Wir veröffentlichen aktuell keine',
 ];
 
-const SOCIAL_OPTIONS = [
-  'Instagram',
-  'Facebook',
-  'LinkedIn',
-  'TikTok',
-  'YouTube',
-  'Xing',
-  'Kununu',
-  'Keine',
-];
-
 const BEWERBUNGEN_OPTIONS = [
   'Keine',
   '1–5 pro Monat',
@@ -57,7 +46,7 @@ const STEP_TITLES: Record<number, string> = {
   2: 'Wen suchen Sie?',
   3: 'Stellen-Werbung',
   4: 'Stellenanzeigen',
-  5: 'Social Media',
+  5: 'Region',
   6: 'Bewerbungen',
   7: 'Ihre Herausforderung',
   8: 'Ihr Ziel',
@@ -76,7 +65,7 @@ export default function FormWizard() {
   const [zielgruppe, setZielgruppe] = useState('');
   const [werbung, setWerbung] = useState('');
   const [stellenKanaele, setStellenKanaele] = useState<string[]>([]);
-  const [socialKanaele, setSocialKanaele] = useState<string[]>([]);
+  const [region, setRegion] = useState('');
   const [bewerbungen, setBewerbungen] = useState('');
   const [problem, setProblem] = useState('');
   const [ziel, setZiel] = useState('');
@@ -92,7 +81,7 @@ export default function FormWizard() {
       case 4:
         return stellenKanaele.length > 0;
       case 5:
-        return socialKanaele.length > 0;
+        return region.trim() !== '';
       case 6:
         return bewerbungen !== '';
       case 7:
@@ -106,12 +95,6 @@ export default function FormWizard() {
 
   function toggleStellenKanal(k: string) {
     setStellenKanaele((prev) =>
-      prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
-    );
-  }
-
-  function toggleSocialKanal(k: string) {
-    setSocialKanaele((prev) =>
       prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
     );
   }
@@ -137,7 +120,7 @@ export default function FormWizard() {
       { question: 'Welche Mitarbeiter suchen Sie aktuell?', answer: zielgruppe },
       { question: 'Schalten Sie Werbung für Ihre offenen Stellen?', answer: werbung },
       { question: 'Wo veröffentlichen Sie Ihre Stellenanzeigen?', answer: stellenKanaele.join(', ') },
-      { question: 'Auf welchen Social-Media-Kanälen ist Ihr Unternehmen aktiv?', answer: socialKanaele.join(', ') },
+      { question: 'In welcher Region suchen Sie Mitarbeiter?', answer: region },
       { question: 'Wie viele Bewerbungen erhalten Sie aktuell pro Monat?', answer: bewerbungen },
       { question: 'Größte Herausforderung bei der Personalsuche', answer: problem },
       { question: 'Ziel in 6 Monaten', answer: ziel },
@@ -308,25 +291,17 @@ export default function FormWizard() {
           </div>
         )}
 
-        {/* Step 5: Social Media */}
+        {/* Step 5: Region */}
         {currentStep === 5 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <p style={questionStyle}>
-              Auf welchen Social-Media-Kanälen ist Ihr Unternehmen aktiv? (Mehrfachauswahl möglich)
-            </p>
-            {SOCIAL_OPTIONS.map((opt) => (
-              <label key={opt} style={checkboxLabelStyle(socialKanaele.includes(opt))}>
-                <input
-                  type="checkbox"
-                  value={opt}
-                  checked={socialKanaele.includes(opt)}
-                  onChange={() => toggleSocialKanal(opt)}
-                  style={{ display: 'none' }}
-                />
-                <span style={checkboxIndicatorStyle(socialKanaele.includes(opt))} />
-                {opt}
-              </label>
-            ))}
+          <div>
+            <p style={questionStyle}>In welcher Region suchen Sie Mitarbeiter?</p>
+            <input
+              type="text"
+              placeholder="z.B. Stuttgart, PLZ 70…, Großraum München"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              style={inputStyle}
+            />
           </div>
         )}
 

@@ -79,12 +79,12 @@ lib/
 ## Form Steps
 
 1. Kontakt — Name*, E-Mail*, Telefon, Firma*
-2. Zielgruppe (Radio)
-3. Marke in 3 Worten (Text)
-4. Differenzierung (Textarea)
-5. Kanäle (Multi-Checkbox)
-6. Konsistenz (Slider 1–5)
-7. Größtes Branding-Problem (Textarea)
+2. Welche Mitarbeiter suchen Sie? (Radio: Fachkräfte / Azubis / Führungskräfte / Helfer / Verschiedene)
+3. Schalten Sie Werbung? (Radio: Ja regelmäßig / Manchmal / Nein)
+4. Wo veröffentlichen Sie Stellenanzeigen? (Multi-Checkbox: Karriereseite, Indeed, Stepstone, LinkedIn, …)
+5. In welcher Region suchen Sie Mitarbeiter? (Textfeld — PLZ/Stadt; Claude nutzt das für Wettbewerbs-Recherche)
+6. Bewerbungen pro Monat (Radio: Keine / 1–5 / 6–15 / 16–50 / 50+)
+7. Größte Herausforderung bei der Personalsuche (Textarea)
 8. Ziel in 6 Monaten (Textarea)
 
 ## Submit Payload (an Make)
