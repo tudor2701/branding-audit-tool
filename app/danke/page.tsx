@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LeadEvent from '@/components/LeadEvent';
 
 export default function DankePage() {
   const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_URL || '#';
@@ -16,6 +17,7 @@ export default function DankePage() {
         backgroundColor: 'var(--white)',
       }}
     >
+      <LeadEvent />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="https://cdn.prod.website-files.com/66a89c1b08041bb1df8b19ec/66a8a014431d2a5f339734f2_convaix-logo-schwarz.svg"
